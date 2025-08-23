@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 export default function SlidingFooter() {
   const [isVisible, setIsVisible] = useState(false);
@@ -53,9 +54,8 @@ export default function SlidingFooter() {
           <div>
             <h3 className="font-semibold mb-3">Legal</h3>
             <ul className="space-y-2 text-neutral-300 text-sm">
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
-              <li>Cookie Policy</li>
+              <Link to ="/privacy" classname ="space-y-4"><li>Privacy Policy</li></Link>
+              <Link to ="/terms" classname ="space-y-4"><li>Terms of Service</li></Link>
             </ul>
           </div>
 

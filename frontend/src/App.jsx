@@ -4,6 +4,10 @@ import Signup from "./components/signup";
 import HeroSectionGitBrief from "./components/hero";
 import SlidingFooter from "./components/Footer";
 import Login from "./components/Login";
+import TermsOfService from "./components/pages/Terms";
+import PrivacyPolicy from "./components/pages/Privacy";
+import Dashboard from "./components/pages/Dashboard";
+
 
 
 function App() {
@@ -22,6 +26,11 @@ function App() {
         />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/dashboard" element={<Dashboard /> } />
+          {/* Add other routes as needed */}
+
         </Routes>
 
       
