@@ -1,6 +1,5 @@
 import express from "express";
 import axios from "axios";
-import jwt from "jsonwebtoken";
 import User from "../models/users.js";
 
 const router = express.Router();
@@ -18,10 +17,7 @@ router.get("/github", (req, res) => {
   res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
 });
 
-/**
- * Step 2: GitHub redirects back with ?code=...
- * We exchange code -> access_token, fetch profile/emails, upsert user, issue JWT
- */
+/** Step 2: callback -> exchange code -> save token -> set cookie -> redirect */
 router.get("/github/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.status(400).send("Missing code");
@@ -40,11 +36,12 @@ router.get("/github/callback", async (req, res) => {
     );
 
     const accessToken = tokenRes.data.access_token;
+     console.log("✅ GitHub Access Token:", accessToken);
     if (!accessToken) {
       return res.status(401).send("Failed to get access token");
     }
 
-    // Fetch user profile
+        // fetch user profile (and emails)
     const [userRes, emailRes] = await Promise.all([
       axios.get("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${accessToken}` }
@@ -61,7 +58,8 @@ router.get("/github/callback", async (req, res) => {
       emails.find((e) => e.verified)?.email ||
       null;
 
-    // Upsert user in DB
+    
+    // upsert user + store token
     let user = await User.findOne({ githubId: String(gh.id) });
     if (!user) {
       user = await User.create({
@@ -69,7 +67,8 @@ router.get("/github/callback", async (req, res) => {
         username: gh.login,
         name: gh.name || gh.login,
         email: primaryEmail,
-        avatarUrl: gh.avatar_url
+        avatarUrl: gh.avatar_url,
+        githubToken: accessToken
       });
     } else {
       // optional: keep profile fresh
@@ -77,23 +76,26 @@ router.get("/github/callback", async (req, res) => {
       user.name = gh.name || gh.login;
       user.email = user.email || primaryEmail;
       user.avatarUrl = gh.avatar_url;
+      user.githubToken = accessToken; // ⬅️ refresh token
       await user.save();
     }
 
-    // Issue JWT
-    const token = jwt.sign(
-      { id: user._id, gh: user.githubId },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+     // set GitHub token in HttpOnly cookie
+    res.cookie("gh_token", accessToken, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+     
 
-     // Set JWT as HttpOnly cookie
-            res.cookie("token", token, {
-            httpOnly: true,   // prevents JS access
-            secure: process.env.NODE_ENV === "production", // HTTPS only in prod
-            sameSite: "lax",
-            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
+     // (optional) set a lightweight "uid" cookie to identify user record quickly
+    res.cookie("uid", String(user._id), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
         // Redirect directly to dashboard (no token in URL!)
         res.redirect(`${process.env.CLIENT_URL}/dashboard`);

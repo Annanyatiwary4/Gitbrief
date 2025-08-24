@@ -1,26 +1,48 @@
-// src/pages/Dashboard.jsx
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { AppSidebar } from "../Sidebar";
-
+import RepoTable from "../DashboardMain";
 
 const Dashboard = () => {
-  return (
-    <div className="flex h-screen w-full bg-black text-white">
-      {/* Sidebar */}
-      <AppSidebar />
+  const [me, setMe] = useState(null);
 
-      {/* Main Content Area */}
+  useEffect(() => {
+    // ping backend for logged-in user
+    fetch("http://localhost:5000/api/users/me", { credentials: "include" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((u) => setMe(u))
+      .catch(() => {});
+  }, []);
+
+
+  return (
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 bg-black border-r border-neutral-800">
+        <AppSidebar />
+      </aside>
+
+      {/* Main area */}
       <div className="flex flex-col flex-1">
         {/* Topbar */}
-       
+        <header className="h-16 border-b border-neutral-800 bg-neutral-950 flex items-center justify-between px-6">
+          <h1 className="text-lg font-semibold text-white">Dashboard</h1>
+          {me && (
+            <div className="flex items-center gap-3 text-white">
+              <img
+                src={me.avatarUrl}
+                alt=""
+                className="w-8 h-8 rounded-full"
+              />
+              <span className="text-white">@{me.username}</span>
+              
+            </div>
+          )}
+        </header>
 
-        {/* Main Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
-          {/* This is where repo table or any page content will go */}
-          <div className="rounded-2xl bg-neutral-900 p-4 shadow-md border border-neutral-800">
-            <h1 className="text-xl font-semibold mb-4">Repositories</h1>
-            {/* Repo Table Component will be placed here */}
-          </div>
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto p-6 bg-neutral-950">
+          <RepoTable />
         </main>
       </div>
     </div>

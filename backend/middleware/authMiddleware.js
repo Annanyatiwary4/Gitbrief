@@ -1,19 +1,9 @@
-import jwt from "jsonwebtoken";
-import User from "../models/users.js";
 
-export const protect = async (req, res, next) => {
-  try {
-    const auth = req.headers.authorization || "";
-    if (!auth.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token" });
-    }
-    const token = auth.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-__v");
-    if (!user) return res.status(401).json({ message: "User not found" });
-    req.user = user;
-    next();
-  } catch (e) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
+// read the GitHub token from HttpOnly cookie and attach to req
+export const requireGithub = (req, res, next) => {
+  const token = req.cookies.gh_token;
+  if (!token) return res.status(401).json({ error: "Missing GitHub token" });
+  req.ghToken = token;
+  next();
 };
+

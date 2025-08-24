@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String },
   email: { type: String },
   avatarUrl: { type: String },
+  githubToken: { type: String },
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/authroutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
+import repoRoutes from "./routes/repoRoutes.js";
 
 
 
@@ -12,14 +13,21 @@ import cookieParser from "cookie-parser";
 const app = express();
 connectDB();
 
-// If you later use cookies, set { credentials: true, origin: CLIENT_URL }
+
 app.use(cookieParser());
-app.use(cors({ credentials:true ,origin: process.env.CLIENT_URL }));
 app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // must exactly match your frontend origin
+    credentials: true,              // allow cookies
+  })
+);
+
 
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api", repoRoutes);
 
 app.get("/", (req, res) => res.send("API running..."));
 
