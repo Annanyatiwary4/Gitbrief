@@ -11,7 +11,7 @@ router.get("/github", (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.GITHUB_CLIENT_ID,
     redirect_uri: process.env.CALLBACK_URL,
-    scope: "read:user user:email",
+    scope: "read:user user:email repo",
     allow_signup: "true"
   });
   res.redirect(`https://github.com/login/oauth/authorize?${params.toString()}`);
