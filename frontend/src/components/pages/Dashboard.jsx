@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { AppSidebar } from "../Sidebar";
-import RepoTable from "../DashboardMain";
+import RepoTable from "../RepoTable";
 
 const Dashboard = () => {
   const [me, setMe] = useState(null);
