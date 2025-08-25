@@ -8,6 +8,7 @@ import TermsOfService from "./components/pages/Terms";
 import PrivacyPolicy from "./components/pages/Privacy";
 import Dashboard from "./components/pages/Dashboard";
 import { PRTable } from "./components/PRtable";
+import PRSummaryPage from "./components/Summary";
 
 
 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/dashboard" element={<Dashboard /> } />
           <Route path="/prs/:owner/:repo" element={<PRTable />} />
+          <Route path="/PRSummary" element ={<PRSummaryPage />} />
           {/* Add other routes as needed */}
 
         </Routes>
