@@ -30,7 +30,7 @@ function App() {
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/dashboard" element={<Dashboard /> } />
-          <Route path ="/prtable" element={<PRTable />} />
+          <Route path="/prs/:owner/:repo" element={<PRTable />} />
           {/* Add other routes as needed */}
 
         </Routes>

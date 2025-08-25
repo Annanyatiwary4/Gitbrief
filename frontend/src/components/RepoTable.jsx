@@ -10,8 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useNavigate } from "react-router-dom";
 
 export default function RepoTable({ token }) {
+  const navigate = useNavigate();
   const [repos, setRepos] = useState([]);
 
   useEffect(() => {
@@ -25,10 +27,11 @@ export default function RepoTable({ token }) {
     load();
   }, []);
 
-  const handleConnect = async (repo) => {
-    // (optional) post to your backend to "connect" this repo in your app
-    alert(`Connected to ${repo.full_name}`);
+   const handleConnect = (repo) => {
+    // navigate to PRTable page with repo details
+    navigate(`/prs/${repo.full_name}`, { state: { repo } });
   };
+
 
   return (
     <Table className="bg-black rounded-4xl shadow-md border border-gray-200">

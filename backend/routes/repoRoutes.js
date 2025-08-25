@@ -34,4 +34,38 @@ router.get("/repos", requireGithub, async (req, res) => {
   }
 });
 
+
+// GET PRs for a repo
+router.get("/repos/:owner/:repo/pull-requests", requireGithub, async (req, res) => {
+  const { owner, repo } = req.params;
+
+  try {
+    const response = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}/pulls?state=all&per_page=50`,
+      {
+        headers: {
+          Authorization: `Bearer ${req.ghToken}`,
+          Accept: "application/vnd.github+json",
+        },
+      }
+    );
+
+    // Map PRs into simplified format
+    const prs = response.data.map((pr) => ({
+      id: pr.number,
+      title: pr.title,
+      contributor: pr.user?.login,
+      status: pr.merged_at ? "merged" : pr.state, // GitHub returns "open"/"closed" — we detect merged explicitly
+      riskScore: Math.floor(Math.random() * 10) + 1, // 🔥 placeholder, until you add real risk logic
+      url: pr.html_url,
+    }));
+
+    res.json(prs);
+  } catch (err) {
+    console.error("PR fetch error:", err.response?.data || err.message);
+    res.status(500).json({ error: "Failed to fetch PRs" });
+  }
+});
+
+
 export default router;

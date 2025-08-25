@@ -36,7 +36,6 @@ router.get("/github/callback", async (req, res) => {
     );
 
     const accessToken = tokenRes.data.access_token;
-     console.log("✅ GitHub Access Token:", accessToken);
     if (!accessToken) {
       return res.status(401).send("Failed to get access token");
     }
