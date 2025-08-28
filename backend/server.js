@@ -6,6 +6,7 @@ import authRoutes from "./routes/authroutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 import repoRoutes from "./routes/repoRoutes.js";
+import prSummaryRoutes from "./routes/PRSummary.js";
 
 
 
@@ -28,6 +29,7 @@ app.use(
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", repoRoutes);
+app.use("/api", prSummaryRoutes);
 
 app.get("/", (req, res) => res.send("API running..."));
 

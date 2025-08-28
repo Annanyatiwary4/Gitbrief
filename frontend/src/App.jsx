@@ -32,7 +32,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/dashboard" element={<Dashboard /> } />
           <Route path="/prs/:owner/:repo" element={<PRTable />} />
-          <Route path="/PRSummary" element ={<PRSummaryPage />} />
+          <Route path="/repos/:owner/:repo/pull-requests/:prNumber" element ={<PRSummaryPage />} />
           {/* Add other routes as needed */}
 
         </Routes>

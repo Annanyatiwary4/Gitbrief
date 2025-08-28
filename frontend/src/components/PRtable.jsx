@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { Link } from "react-router-dom"
 import {
   flexRender,
   getCoreRowModel,
@@ -52,7 +53,17 @@ export const columns = [
         Title <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <span>{row.getValue("title")}</span>,
+    cell: ({ row }) => {
+    const { owner, repo } = useParams()
+    return (
+      <Link
+        to={`/repos/${owner}/${repo}/pull-requests/${row.getValue("id")}`}
+        className="text-blue-400 hover:underline"
+      >
+        {row.getValue("title")}
+      </Link>
+    )
+  },
   },
   {
     accessorKey: "contributor",
