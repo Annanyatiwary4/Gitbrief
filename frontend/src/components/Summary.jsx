@@ -45,6 +45,9 @@ const riskData = [
   { name: "Remaining", value: 100 - riskScore },
 ]
 
+ const aiSummaryText = summary?.summary ?? "No summary available";
+
+
 
   return (
     <div className="min-h-screen bg-black text-white p-6 space-y-6">
@@ -55,19 +58,19 @@ const riskData = [
       {/* Section 1: Summary Stats */}
       <Card className="bg-black border-zinc-800 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white">📊 Summary Stats</CardTitle>
+          <CardTitle className="text-white text-3xl">Summary Stats</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-3 gap-6 text-center">
-          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-zinc-800 rounded-2xl shadow">
-            <p className="text-gray-400">Files Changed</p>
-            <p className="text-2xl font-bold">{stats.filesChanged}</p>
+          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-black border-white rounded-2xl shadow">
+            <p className="text-white text-2xl">Files Changed</p>
+            <p className="text-2xl font-bold text-white ">{stats.filesChanged}</p>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-zinc-800 rounded-2xl shadow">
-            <p className="text-gray-400">Lines Added</p>
-            <p className="text-2xl font-bold text-green-400">+{stats.linesAdded}</p>
+          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-black rounded-2xl shadow">
+            <p className="text-white text-2xl">Lines Added</p>
+            <p className="text-xl font-bold text-green-400">+{stats.linesAdded}</p>
           </motion.div>
-          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-zinc-800 rounded-2xl shadow">
-            <p className="text-gray-400">Lines Removed</p>
+          <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-black rounded-2xl shadow">
+            <p className="text-white text-2xl">Lines Removed</p>
             <p className="text-2xl font-bold text-red-400">-{stats.linesRemoved}</p>
           </motion.div>
         </CardContent>
@@ -76,11 +79,11 @@ const riskData = [
       {/* Section 2: Dependency Changes */}
       <Card className="bg-black border-zinc-800 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white">📦 Dependency Changes</CardTitle>
+          <CardTitle className="text-white text-3xl">Dependency Changes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-white" >
           {dependencies.map((dep, i) => (
-            <p key={i} className={`font-bold ${dep.risk === "Major" ? "text-red-400" : "text-yellow-400"}`}>
+            <p key={i} className={`font-mono ${dep.risk === "Major" ? "text-red-400" : "text-yellow-400"}`}>
               {dep.name}: {dep.from} → {dep.to} ({dep.risk})
             </p>
           ))}
@@ -90,9 +93,9 @@ const riskData = [
       {/* Section 3: Change Categories */}
       <Card className="bg-black border-zinc-800 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white">🗂 Change Categories</CardTitle>
+          <CardTitle className="text-white text-3xl">Change Categories</CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col gap-2 text-white">
+        <CardContent className="flex flex-row gap-2 text-white font-medium">
           {categories.map((c, i) => <p key={i}>{c}</p>)}
         </CardContent>
       </Card>
@@ -100,7 +103,7 @@ const riskData = [
       {/* Section 4: File Changes */}
       <Card className="bg-black border-zinc-800 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white">📄 File Changes</CardTitle>
+          <CardTitle className="text-white text-3xl">📄 File Changes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-white">
           {files.map((f, i) => (
@@ -139,6 +142,16 @@ const riskData = [
             <p className="text-gray-400 text-sm">Risk Score</p>
           </div>
         </Card>
+
+        <Card className="bg-black border-zinc-800 shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-white text-3xl">🤖 AI Summary</CardTitle>
+        </CardHeader>
+        <CardContent className="text-white space-y-2 font-sans">
+          <p>{aiSummaryText}</p>
+        </CardContent>
+      </Card>
+
 
         {/* Actions */}
         <Card className="bg-black border-zinc-800 shadow-xl flex flex-col justify-center items-center">

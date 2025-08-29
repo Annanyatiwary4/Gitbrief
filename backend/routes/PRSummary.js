@@ -12,41 +12,61 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
   const { owner, repo, prNumber } = req.params;
 
   try {
-    // 1. Fetch PR commits
+    // 1️⃣ Fetch PR commits
     const commitsRes = await axios.get(
       `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}/commits`,
       { headers: { Authorization: `Bearer ${req.ghToken}` } }
     );
+    const commits = commitsRes.data;
 
-    // 2. Fetch PR files
+    // 2️⃣ Fetch PR files
     const filesRes = await axios.get(
       `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}/files`,
       { headers: { Authorization: `Bearer ${req.ghToken}` } }
     );
-
-    const commits = commitsRes.data;
     const files = filesRes.data;
 
-    // Collect stats
+    // 3️⃣ Collect stats
     const stats = {
       filesChanged: files.length,
       linesAdded: files.reduce((sum, f) => sum + f.additions, 0),
       linesRemoved: files.reduce((sum, f) => sum + f.deletions, 0),
       commits: commits.length,
-      fileChanges: files.map((f) => ({
-        filename: f.filename,
-        additions: f.additions,
-        deletions: f.deletions,
+      fileChanges: files.map(f => ({
+        path: f.filename,
+        added: f.additions,
+        removed: f.deletions,
       })),
     };
 
-    // 3. AI Prompt (force JSON)
-    const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
+    // 4️⃣ Fetch both backend and frontend package.json
+    const branches = ["main", `refs/pull/${prNumber}/head`];
+    const pkgPaths = ["backend/package.json", "frontend/package.json"];
+    const packageFiles = [];
+
+    for (const branch of branches) {
+      for (const path of pkgPaths) {
+        try {
+          const res = await axios.get(
+            `https://api.github.com/repos/${owner}/${repo}/contents/${path}?ref=${branch}`,
+            { headers: { Authorization: `Bearer ${req.ghToken}` } }
+          );
+          const content = Buffer.from(res.data.content, "base64").toString();
+          packageFiles.push({ branch, path, content: JSON.parse(content) });
+        } catch (err) {
+          console.warn(`Failed to fetch ${path} at ${branch}:`, err.response?.status);
+        }
+      }
+    }
+
+    // 5️⃣ Prepare AI prompt
     const prompt = `
-You are analyzing a GitHub Pull Request. 
-Return ONLY valid JSON with this schema (no markdown, no extra text):
+You are analyzing a GitHub Pull Request with detailed dependency and code changes. 
+
+Return ONLY valid JSON (no markdown, no extra text) with this schema:
 
 {
+  "summary": "Detailed developer-friendly summary of features, bug fixes, refactors, config changes etc.",
   "stats": {
     "filesChanged": ${stats.filesChanged},
     "linesAdded": ${stats.linesAdded},
@@ -54,54 +74,62 @@ Return ONLY valid JSON with this schema (no markdown, no extra text):
     "commits": ${stats.commits}
   },
   "dependencies": [
-    { "name": "dependency-name", "from": "x.y.z", "to": "a.b.c", "risk": "Major | Minor | Patch" }
+    {
+      "name": "dependency-name",
+      "from": "x.y.z",
+      "to": "a.b.c",
+      "risk": "Major | Minor | Patch",
+      "potentialIssues": ["list potential bugs or breaking changes"]
+    }
   ],
-- "from" is the old version, "to" is the new version.  
-- "risk" is based on semantic versioning:
-  - Major if the first digit changed (breaking changes).  
-  - Minor if the middle digit changed.  
-  - Patch if only the last digit changed.  
-- Do not include unrelated files, only dependencies.
-
-
-  "categories": ["Feature: ...", "Refactor: ...", "Config Change: ..."],
+  "categories": ["Feature", "Bugfix", "Refactor", "Config Change", "Performance", "Security"],
   "files": [
-    { "path": "src/example/File.java", "added": 10, "removed": 2 }
+    { "path": "src/example/File.js", "added": 10, "removed": 2 }
   ],
   "riskScore": 0-100,
   "actions": ["Export Summary PDF", "Send to Slack"]
 }
 
 --- DATA ---
-
 FILES CHANGED:
-${stats.fileChanges.map(f => `${f.filename} (+${f.additions}, -${f.deletions})`).join("\n")}
+${stats.fileChanges.map(f => `${f.path} (+${f.added}, -${f.removed})`).join("\n")}
 
 COMMITS:
 ${commits.map(c => `- ${c.commit.message}`).join("\n")}
-    `;
 
-    const result = await model.generateContent(prompt);
-     let summaryJson;
+PACKAGE FILES:
+${packageFiles.map(pf => `${pf.path} @ ${pf.branch}: ${JSON.stringify(pf.content.dependencies || {})}`).join("\n")}
+
+Analyze all dependency changes, list potential risks, breaking changes, and bugs. Generate detailed categories and riskScore based on semantic versioning and potential impact.
+`;
+
+    // 6️⃣ Generate AI summary
+    const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
+
+    let aiResponse;
     try {
-      let rawText = result.response.text();
+      aiResponse = await model.generateContent(prompt);
+    } catch (err) {
+      console.error("AI generation failed:", err);
+      return res.status(500).json({ error: "AI generation failed" });
+    }
 
-      // 🚀 Remove markdown code fences if AI adds ```json ... ```
+    let summaryJson;
+    try {
+      let rawText = aiResponse.response.text();
       rawText = rawText.replace(/```json\n?/g, "").replace(/```/g, "").trim();
-
       summaryJson = JSON.parse(rawText);
     } catch (e) {
-      console.error("Failed to parse AI response:", result.response.text());
+      console.error("Failed to parse AI response:", aiResponse.response.text());
       return res.status(500).json({ error: "AI did not return valid JSON" });
     }
 
-
-    // ✅ Final response: directly return parsed JSON plus PR number
+    // 7️⃣ Return JSON
     res.json({
       prNumber,
       ...summaryJson,
     });
-
+   
   } catch (err) {
     console.error("PR Summary Error:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to generate PR summary" });
