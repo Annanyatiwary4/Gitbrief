@@ -8,7 +8,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // ping backend for logged-in user
-    fetch("http://localhost:5000/api/users/me", { credentials: "include" })
+    fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, { credentials: "include" })
       .then((r) => (r.ok ? r.json() : null))
       .then((u) => setMe(u))
       .catch(() => {});

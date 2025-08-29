@@ -11,13 +11,6 @@ export default function Signup() {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
   };
 
-  const handleDirectSignup = (e) => {
-    e.preventDefault();
-    console.log("Direct signup with:", { repoUrl, accessToken });
-
-    // You’d call your backend here
-    // fetch(`${import.meta.env.VITE_BACKEND_URL}/auth/direct`, { ... })
-  };
 
   return (
     <div className="min-h-screen w-full bg-black flex items-center justify-center px-4">
