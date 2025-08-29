@@ -1,7 +1,7 @@
 import express from "express";
 import axios from "axios";
 import PRSummary from "../models/Summary.js";
-import { requireGithub } from "../middleware/authmiddleware.js";
+import { requireGithub } from "../middleware/authMiddleware.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const router = express.Router();

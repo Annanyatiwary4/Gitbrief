@@ -1,6 +1,6 @@
 import express from "express";
 import axios from "axios";
-import { requireGithub } from "../middleware/authmiddleware.js";
+import { requireGithub } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
