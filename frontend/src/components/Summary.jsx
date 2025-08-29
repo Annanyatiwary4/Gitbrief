@@ -186,24 +186,12 @@ const riskData = [
 
         <Card className="bg-black border-zinc-800 shadow-xl">
         <CardHeader>
-          <CardTitle className="text-white text-3xl">🤖 AI Summary</CardTitle>
+          <CardTitle className="text-white text-3xl">Summary</CardTitle>
         </CardHeader>
         <CardContent className="text-white space-y-2 font-sans">
           <p>{aiSummaryText}</p>
         </CardContent>
       </Card>
-
-
-        {/* Actions */}
-        <Card className="bg-black border-zinc-800 shadow-xl flex flex-col justify-center items-center">
-          <CardHeader>
-            <CardTitle className="text-white">⚡ Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-4">
-            <Button className="bg-green-600 hover:bg-green-700 text-white">Export Summary PDF</Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Send to Slack</Button>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )
