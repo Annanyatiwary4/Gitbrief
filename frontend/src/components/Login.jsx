@@ -77,40 +77,6 @@ const Login = () => {
             <div className="flex-grow border-t border-gray-700"></div>
           </div>
 
-          {/* Direct PR Fetch (Repo URL + Access Token) */}
-          <form onSubmit={handleDirectAccess} className="w-full space-y-4">
-            <div>
-              <Label className="text-gray-300">Repository URL</Label>
-              <Input
-                type="text"
-                placeholder="https://github.com/user/repo"
-                value={repoUrl}
-                onChange={(e) => setRepoUrl(e.target.value)}
-                className="bg-neutral-900 border-neutral-800 text-gray-100 placeholder-gray-400"
-              />
-            </div>
-            <div>
-              <Label className="text-gray-300">Access Token</Label>
-              <Input
-                type="password"
-                placeholder="GitHub Personal Access Token"
-                value={accessToken}
-                onChange={(e) => setAccessToken(e.target.value)}
-                className="bg-neutral-900 border-neutral-800 text-gray-100 placeholder-gray-400"
-              />
-            </div>
-            <button
-              type="submit"
-              className="group/btn relative flex h-12 w-full items-center justify-center space-x-2 rounded-md 
-                         bg-blue-600 px-4 font-medium text-white shadow-lg 
-                         hover:shadow-[0_0_15px_rgba(0,255,0,0.2)] transition cursor-pointer"
-            >
-              <KeyRound className="h-5 w-5" />
-              <span className="text-sm">Fetch PR Details</span>
-              <BottomGradient />
-            </button>
-          </form>
-
           {/* Signup link */}
           <p className="text-center text-sm text-gray-500">
             Don’t have an account?{" "}

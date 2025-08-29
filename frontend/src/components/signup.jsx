@@ -51,42 +51,6 @@ export default function Signup() {
           <div className="flex-grow border-t border-zinc-700"></div>
         </div>
 
-        {/* Direct Signup Form */}
-        <form onSubmit={handleDirectSignup} className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1 text-gray-300">Repo URL</label>
-            <input
-              type="url"
-              value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
-              placeholder="https://github.com/username/repo"
-              className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 text-gray-200 
-                         placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm mb-1 text-gray-300">Access Token</label>
-            <input
-              type="password"
-              value={accessToken}
-              onChange={(e) => setAccessToken(e.target.value)}
-              placeholder="Enter your GitHub access token"
-              className="w-full rounded-md bg-zinc-900 border border-zinc-700 px-3 py-2 text-gray-200 
-                         placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-              className="group/btn relative flex h-12 w-full items-center justify-center space-x-2 rounded-md 
-                         bg-blue-600 px-4 font-medium text-white shadow-lg 
-                          hover:shadow-[0_0_15px_rgba(0,255,0,0.2)] transition cursor-pointer" >
-                        <KeyRound className="h-5 w-5" />
-                        <span className="text-sm">Fetch PR Details</span>
-                        <BottomGradient />
-            </button>
-        </form>
 
         {/* Login Link */}
         <p className="mt-6 text-center text-sm text-neutral-400">

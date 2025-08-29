@@ -85,16 +85,6 @@ export const columns = [
     },
   },
   {
-    accessorKey: "riskScore",
-    header: "Risk Score",
-    cell: ({ row }) => {
-      const score = row.getValue("riskScore")
-      const color =
-        score >= 7 ? "text-red-400" : score >= 4 ? "text-yellow-400" : "text-green-400"
-      return <span className={`font-bold ${color}`}>{score}/10</span>
-    },
-  },
-  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {

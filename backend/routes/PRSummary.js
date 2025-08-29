@@ -1,6 +1,6 @@
-// routes/prSummary.js
 import express from "express";
 import axios from "axios";
+import PRSummary from "../models/Summary.js";
 import { requireGithub } from "../middleware/authmiddleware.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -12,34 +12,40 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
   const { owner, repo, prNumber } = req.params;
 
   try {
-    // 1️⃣ Fetch PR commits
+    // ✅ Check cache first
+    const cached = await PRSummary.findOne({ repoFullName: `${owner}/${repo}`, prNumber });
+    if (cached) return res.json({ prNumber, ...cached.toObject() });
+
+    // 1️⃣ Fetch commits
     const commitsRes = await axios.get(
       `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}/commits`,
       { headers: { Authorization: `Bearer ${req.ghToken}` } }
     );
     const commits = commitsRes.data;
 
-    // 2️⃣ Fetch PR files
+    // 2️⃣ Fetch files
     const filesRes = await axios.get(
       `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}/files`,
       { headers: { Authorization: `Bearer ${req.ghToken}` } }
     );
     const files = filesRes.data;
 
-    // 3️⃣ Collect stats
+    // 3️⃣ Stats
     const stats = {
       filesChanged: files.length,
       linesAdded: files.reduce((sum, f) => sum + f.additions, 0),
       linesRemoved: files.reduce((sum, f) => sum + f.deletions, 0),
       commits: commits.length,
-      fileChanges: files.map(f => ({
-        path: f.filename,
-        added: f.additions,
-        removed: f.deletions,
-      })),
+      fileChanges: files.map(f => ({ path: f.filename, added: f.additions, removed: f.deletions })),
     };
 
-    // 4️⃣ Fetch both backend and frontend package.json
+    // 4️⃣ Risk score
+    const riskScore = Math.min(
+      Math.floor((stats.linesAdded + stats.linesRemoved + stats.filesChanged * 10 + stats.commits * 5) / 10),
+      10
+    );
+
+    // 5️⃣ Fetch package.json dependencies (optional)
     const branches = ["main", `refs/pull/${prNumber}/head`];
     const pkgPaths = ["backend/package.json", "frontend/package.json"];
     const packageFiles = [];
@@ -59,60 +65,47 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
       }
     }
 
-    // 5️⃣ Prepare AI prompt
+    // 6️⃣ AI prompt
     const prompt = `
-You are analyzing a GitHub Pull Request with detailed dependency and code changes. 
+          "stats": {
+              "filesChanged": ${stats.filesChanged},
+              "linesAdded": ${stats.linesAdded},
+              "linesRemoved": ${stats.linesRemoved},
+              "commits": ${stats.commits}
+            },
+            "dependencies": [
+              {
+                "name": "dependency-name",
+                "from": "x.y.z",
+                "to": "a.b.c",
+                "risk": "Major | Minor | Patch",
+                "potentialIssues": ["list potential bugs or breaking changes"]
+              }
+            ],
+            "categories": ["Feature", "Bugfix", "Refactor", "Config Change", "Performance", "Security"],
+            "files": [
+              { "path": "src/example/File.js", "added": 10, "removed": 2 }
+            ],
+            "riskScore": 0-100,
+            "actions": ["Export Summary PDF", "Send to Slack"]
+          }
 
-Return ONLY valid JSON (no markdown, no extra text) with this schema:
+          --- DATA ---
+          FILES CHANGED:
+          ${stats.fileChanges.map(f => `${f.path} (+${f.added}, -${f.removed})`).join("\n")}
 
-{
-  "summary": "Detailed developer-friendly summary of features, bug fixes, refactors, config changes etc.",
-  "stats": {
-    "filesChanged": ${stats.filesChanged},
-    "linesAdded": ${stats.linesAdded},
-    "linesRemoved": ${stats.linesRemoved},
-    "commits": ${stats.commits}
-  },
-  "dependencies": [
-    {
-      "name": "dependency-name",
-      "from": "x.y.z",
-      "to": "a.b.c",
-      "risk": "Major | Minor | Patch",
-      "potentialIssues": ["list potential bugs or breaking changes"]
-    }
-  ],
-  "categories": ["Feature", "Bugfix", "Refactor", "Config Change", "Performance", "Security"],
-  "files": [
-    { "path": "src/example/File.js", "added": 10, "removed": 2 }
-  ],
-  "riskScore": 0-100,
-  "actions": ["Export Summary PDF", "Send to Slack"]
-}
+          COMMITS:
+          ${commits.map(c => `- ${c.commit.message}`).join("\n")}
 
---- DATA ---
-FILES CHANGED:
-${stats.fileChanges.map(f => `${f.path} (+${f.added}, -${f.removed})`).join("\n")}
+          PACKAGE FILES:
+          ${packageFiles.map(pf => `${pf.path} @ ${pf.branch}: ${JSON.stringify(pf.content.dependencies || {})}`).join("\n")}
 
-COMMITS:
-${commits.map(c => `- ${c.commit.message}`).join("\n")}
+          Analyze all dependency changes, list potential risks, breaking changes, and bugs. Generate detailed categories and riskScore based on semantic versioning and potential impact.
+          `;
 
-PACKAGE FILES:
-${packageFiles.map(pf => `${pf.path} @ ${pf.branch}: ${JSON.stringify(pf.content.dependencies || {})}`).join("\n")}
-
-Analyze all dependency changes, list potential risks, breaking changes, and bugs. Generate detailed categories and riskScore based on semantic versioning and potential impact.
-`;
-
-    // 6️⃣ Generate AI summary
+    // 7️⃣ Generate AI summary
     const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
-
-    let aiResponse;
-    try {
-      aiResponse = await model.generateContent(prompt);
-    } catch (err) {
-      console.error("AI generation failed:", err);
-      return res.status(500).json({ error: "AI generation failed" });
-    }
+    const aiResponse = await model.generateContent(prompt);
 
     let summaryJson;
     try {
@@ -124,12 +117,31 @@ Analyze all dependency changes, list potential risks, breaking changes, and bugs
       return res.status(500).json({ error: "AI did not return valid JSON" });
     }
 
-    // 7️⃣ Return JSON
-    res.json({
+    // ✅ Normalize dependencies: ensure array of objects
+    const normalizedDeps = (summaryJson.dependencies || []).map(dep =>
+      typeof dep === "string"
+        ? { name: dep, from: "", to: "", risk: "Minor", potentialIssues: [] }
+        : dep
+    );
+
+    // ✅ Normalize files
+    const filesToSave = (summaryJson.files || stats.fileChanges).map(f =>
+      typeof f === "string" ? { path: f, added: 0, removed: 0 } : f
+    );
+
+    // 8️⃣ Save to DB
+    const saved = await PRSummary.create({
+      repoFullName: `${owner}/${repo}`,
       prNumber,
-      ...summaryJson,
+      summary: summaryJson.summary,
+      stats,
+      dependencies: normalizedDeps,
+      categories: summaryJson.categories || [],
+      files: filesToSave,
+      riskScore: summaryJson.riskScore ?? riskScore,
     });
-   
+
+    res.json({ prNumber, ...saved.toObject() });
   } catch (err) {
     console.error("PR Summary Error:", err.response?.data || err.message);
     res.status(500).json({ error: "Failed to generate PR summary" });
