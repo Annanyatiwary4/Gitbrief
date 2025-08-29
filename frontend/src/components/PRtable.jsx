@@ -33,6 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import BackButton from "@/utils/Backbutton"
+import { Skeleton } from "./ui/skeleton"
 
 // -----------------
 // Define columns
@@ -181,7 +182,19 @@ export function PRTable() {
     },
   })
 
-  if (loading) return <p className="text-white p-6">Loading PRs...</p>
+    if (loading) {
+    // Skeleton loader while fetching
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center bg-black">
+      <div className="space-y-4 w-full max-w-3xl p-6">
+        <Skeleton className="h-8 w-1/3" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-2/3" />
+      </div>
+    </div>
+    );
+  }
 
   return (
     <div className="w-full bg-black text-gray-200 min-h-screen p-6">
