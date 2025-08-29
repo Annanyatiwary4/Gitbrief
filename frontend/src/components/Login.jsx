@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { Github, KeyRound } from "lucide-react";
+import { Github} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+
 import { Link } from "react-router-dom";
+
 
 const Login = () => {
   const [repoUrl, setRepoUrl] = useState("");
@@ -48,6 +48,7 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-black">
+       
       <Card className="w-full max-w-md shadow-xl p-6 bg-black rounded-2xl border border-neutral-800">
         <CardHeader>
           <CardTitle className="text-center text-2xl text-blue-50 font-semibold">

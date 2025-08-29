@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -74,7 +73,7 @@ export default function RepoTable({ token }) {
               </a>
               <button
                 onClick={() => handleConnect(repo)}
-                className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700"
+                className="bg-blue-600 text-white px-3 py-1 rounded-md cursor-pointer hover:bg-blue-700"
               >
                 Connect
               </button>

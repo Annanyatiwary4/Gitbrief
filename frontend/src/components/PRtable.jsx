@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import BackButton from "@/utils/Backbutton"
 
 // -----------------
 // Define columns
@@ -184,6 +185,7 @@ export function PRTable() {
 
   return (
     <div className="w-full bg-black text-gray-200 min-h-screen p-6">
+      <BackButton />
       <h2 className="text-xl font-bold text-white mb-4">
         Pull Requests for{" "}
         {repoData ? repoData.full_name : `${owner}/${repo}`}

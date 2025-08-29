@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { motion } from "framer-motion"
+import BackButton from "@/utils/Backbutton"
 
 const COLORS = ["#ef4444", "#1f2937"]
 
@@ -51,9 +52,12 @@ const riskData = [
 
   return (
     <div className="min-h-screen bg-black text-white p-6 space-y-6">
+      <BackButton />
       <h1 className="text-3xl font-bold text-center mb-6">
+        
         PR Summary – {owner}/{repo} #{prNumber}
       </h1>
+
 
       {/* Section 1: Summary Stats */}
       <Card className="bg-black border-zinc-800 shadow-xl">

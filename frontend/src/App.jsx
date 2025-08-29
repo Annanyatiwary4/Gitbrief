@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState,useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./components/signup";
 import HeroSectionGitBrief from "./components/hero";
@@ -9,13 +9,35 @@ import PrivacyPolicy from "./components/pages/Privacy";
 import Dashboard from "./components/pages/Dashboard";
 import { PRTable } from "./components/PRtable";
 import PRSummaryPage from "./components/Summary";
+import { LoaderOne } from "./components/ui/loader";
+import { useLocation  } from "react-router-dom";
 
+// Wrapper component to handle loading between routes
+function PageWrapper({ children }) {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    // Start loader on route change
+    setLoading(true);
+
+    // Simulate async page load delay (you can remove or adjust this)
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 500); // half a second delay
+
+    return () => clearTimeout(timeout);
+  }, [location]);
+
+  if (loading) return <LoaderOne />; // show loader
+  return children; // show page
+}
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+         <PageWrapper>
         {/* Routes */}
         <Routes>
           <Route
@@ -37,7 +59,7 @@ function App() {
 
         </Routes>
 
-      
+      </PageWrapper>
       </div>
     </Router>
   );
