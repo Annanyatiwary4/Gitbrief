@@ -10,7 +10,7 @@ const Login = () => {
   const [accessToken, setAccessToken] = useState("");
 
   const handleGithubLogin = () => {
-    window.location.href = `http://localhost:5000/auth/github`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
   };
 
   const handleDirectAccess = async (e) => {
@@ -22,7 +22,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.BACKEND_URL}/api/pr-details`,
+        `${import.meta.env.VITE_API_URL}/api/pr-details`,
         {
           method: "POST",
           headers: {

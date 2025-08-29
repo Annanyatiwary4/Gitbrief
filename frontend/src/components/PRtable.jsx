@@ -142,7 +142,7 @@ export function PRTable() {
     const fetchPRs = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/repos/${owner}/${repo}/pull-requests`, 
+          `${import.meta.env.VITE_API_URL}/api/repos/${owner}/${repo}/pull-requests`, 
           { credentials: "include" } // ✅ backend route, not GitHub directly
         )
         const prs = await res.json()

@@ -54,8 +54,8 @@ export default function SlidingFooter() {
           <div>
             <h3 className="font-semibold mb-3">Legal</h3>
             <ul className="space-y-2 text-neutral-300 text-sm">
-              <Link to ="/privacy" classname ="space-y-4"><li>Privacy Policy</li></Link>
-              <Link to ="/terms" classname ="space-y-4"><li>Terms of Service</li></Link>
+              <Link to ="/privacy" className ="space-y-4"><li>Privacy Policy</li></Link>
+              <Link to ="/terms" className ="space-y-4"><li>Terms of Service</li></Link>
             </ul>
           </div>
 

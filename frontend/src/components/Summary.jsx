@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { motion } from "framer-motion"
 import BackButton from "@/utils/Backbutton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 const COLORS = ["#ef4444", "#1f2937"]
 
@@ -18,7 +19,7 @@ export default function PRSummary() {
     const fetchSummary = async () => {
       try {
         const res = await fetch(
-          `http://localhost:5000/api/repos/${owner}/${repo}/pull-requests/${prNumber}/summary`,
+          `${import.meta.env.VITE_API_URL}/api/repos/${owner}/${repo}/pull-requests/${prNumber}/summary`,
           { credentials: "include" }
         )
         const data = await res.json()
@@ -34,7 +35,43 @@ export default function PRSummary() {
     fetchSummary()
   }, [owner, repo, prNumber])
 
-  if (loading) return <p className="text-white p-6">Loading Summary...</p>
+
+if (loading) {
+  return (
+     <div className="min-h-screen w-full bg-black p-6">
+    <div className="p-6 grid gap-6 md:grid-cols-2">
+      {/* Card 1 Skeleton */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 space-y-4">
+        <Skeleton className="h-6 w-1/3" /> {/* Card title */}
+        <Skeleton className="h-4 w-full" /> {/* Line 1 */}
+        <Skeleton className="h-4 w-2/3" /> {/* Line 2 */}
+      </div>
+
+      {/* Card 2 Skeleton */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 space-y-4">
+        <Skeleton className="h-6 w-1/2" /> {/* Card title */}
+        <Skeleton className="h-4 w-full" /> {/* Line 1 */}
+        <Skeleton className="h-4 w-4/5" /> {/* Line 2 */}
+      </div>
+
+      {/* Card 3 Skeleton */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 space-y-4">
+        <Skeleton className="h-6 w-1/4" /> {/* Card title */}
+        <Skeleton className="h-4 w-full" /> {/* Line 1 */}
+        <Skeleton className="h-4 w-3/4" /> {/* Line 2 */}
+      </div>
+
+      {/* Card 4 Skeleton */}
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4 space-y-4">
+        <Skeleton className="h-6 w-1/3" /> {/* Card title */}
+        <Skeleton className="h-4 w-full" /> {/* Line 1 */}
+        <Skeleton className="h-4 w-2/3" /> {/* Line 2 */}
+      </div>
+    </div>
+    </div>
+  );
+}
+
   if (!summary) return <p className="text-white p-6">No summary found.</p>
 
   // 👇 Extract summary fields

@@ -3,8 +3,7 @@
 import { motion } from "framer-motion";
 import { SparklesCore } from "./ui/sparkles";
 import FeaturesSectionDemo from "./features";
-import { Link } from "react-router-dom";
-
+import { Link,useNavigate } from "react-router-dom";
 
 export default function HeroSectionGitBrief() {
   return (
@@ -75,13 +74,11 @@ export default function HeroSectionGitBrief() {
           className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
         >
           <Link to="/signup">
-          <button className="w-60 rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-500">
+          <button className="w-full cursor-pointer rounded-lg bg-blue-600 px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-500">
             Get Started
           </button>
           </Link>
-          <button className="w-60 rounded-lg border border-neutral-600 bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-neutral-800">
-            Learn More
-          </button>
+          
         </motion.div>
 
         {/* Preview Image */}
@@ -111,17 +108,18 @@ export default function HeroSectionGitBrief() {
 }
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate("/login");
+  };
+
   return (
     <nav className="flex w-full items-center justify-between border-t border-b border-neutral-800 px-4 py-4">
       <div className="flex items-center gap-2">
         <div className="h-7 w-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600" />
         <h1 className="text-base font-bold md:text-2xl">GitBrief</h1>
       </div>
-      <Link to="/login">
-        <button type="button" className="w-24 rounded-lg cursor-pointer bg-blue-600 px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-blue-500 md:w-32">
-          Login
-        </button>
-      </Link>
     </nav>
   );
 };

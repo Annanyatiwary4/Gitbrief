@@ -8,7 +8,7 @@ export default function Signup() {
 
   const handleGithubSignup = () => {
     console.log("Redirecting to GitHub OAuth...");
-    window.location.href = `http://localhost:5000/auth/github`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
   };
 
   const handleDirectSignup = (e) => {

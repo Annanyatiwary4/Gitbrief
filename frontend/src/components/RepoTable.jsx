@@ -17,7 +17,7 @@ export default function RepoTable({ token }) {
 
   useEffect(() => {
     const load = async () => {
-      const res = await fetch("http://localhost:5000/api/repos", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/repos`, {
         credentials: "include", // <-- send cookies
       });
       const data = await res.json();
