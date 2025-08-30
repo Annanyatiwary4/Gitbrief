@@ -118,22 +118,32 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
     }
 
     // ✅ Normalize dependencies: ensure array of objects
-    const normalizedDeps = (summaryJson.dependencies || []).map(dep =>
-      typeof dep === "string"
-        ? { name: dep, from: "", to: "", risk: "Minor", potentialIssues: [] }
-        : dep
-    );
+   const normalizedDeps = (summaryJson.dependencies || []).map(dep => {
+  // If AI returned an invalid risk, default to "Minor"
+  const risk = ["Patch", "Minor", "Major"].includes(dep.risk) ? dep.risk : "Minor";
+      return {
+        name: dep.name || "",
+        from: dep.from || "",
+        to: dep.to || "",
+        risk,
+        potentialIssues: dep.potentialIssues || [],
+      };
+    });
+
 
     // ✅ Normalize files
     const filesToSave = (summaryJson.files || stats.fileChanges).map(f =>
       typeof f === "string" ? { path: f, added: 0, removed: 0 } : f
     );
 
+  const summaryText = summaryJson.summary || `PR #${prNumber} has ${stats.commits} commits and ${stats.filesChanged} changed files.`;
+
+
     // 8️⃣ Save to DB
     const saved = await PRSummary.create({
       repoFullName: `${owner}/${repo}`,
       prNumber,
-      summary: summaryJson.summary,
+      summary: summaryText,
       stats,
       dependencies: normalizedDeps,
       categories: summaryJson.categories || [],

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const PRSummarySchema = new mongoose.Schema({
   repoFullName: { type: String, required: true }, // e.g., owner/repo
   prNumber: { type: Number, required: true },
-  summary: { type: String, required: false },
+  summary: { type: String, required: true },
   stats: {
     filesChanged: Number,
     linesAdded: Number,
