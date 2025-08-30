@@ -118,19 +118,34 @@ const riskData = [
       </Card>
 
       {/* Section 2: Dependency Changes */}
-      <Card className="bg-black border-zinc-800 shadow-xl">
-        <CardHeader>
-          <CardTitle className="text-white text-3xl">Dependency Changes</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-white" >
-          {dependencies.map((dep, i) => (
-            <p key={i} className={`font-mono ${dep.risk === "Major" ? "text-red-400" : "text-yellow-400"}`}>
-              {dep.name}: {dep.from} → {dep.to} ({dep.risk})
-            </p>
-            
-          ))}
-        </CardContent>
-      </Card>
+       <Card className="bg-black border-zinc-800 shadow-xl">
+  <CardHeader>
+    <CardTitle className="text-white text-3xl">Dependency Changes</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-2 text-white">
+    {dependencies && dependencies.length > 0 ? (
+      dependencies.map((dep, i) => (
+        <div key={i} className="font-mono">
+          <p className={dep.risk === "Major" ? "text-red-400" : "text-yellow-400"}>
+            {dep.name}: {dep.from} → {dep.to} ({dep.risk})
+          </p>
+          {dep.potentialIssues && dep.potentialIssues.length > 0 ? (
+            <ul className="ml-4 list-disc text-gray-300">
+              {dep.potentialIssues.map((issue, idx) => (
+                <li key={idx}>{issue}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="ml-4 text-gray-400 italic">No potential issues</p>
+          )}
+        </div>
+      ))
+    ) : (
+      <p className="text-gray-400 italic">No dependency changes. You are good to go!</p>
+    )}
+  </CardContent>
+</Card>
+
 
       {/* Section 3: Change Categories */}
       <Card className="bg-black border-zinc-800 shadow-xl">
