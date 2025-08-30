@@ -27,12 +27,12 @@ router.get("/me", async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("gh_token", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "None",
     secure: process.env.NODE_ENV === "production",
   });
   res.clearCookie("uid", {
     httpOnly: true,
-    sameSite: "lax",
+    sameSite: "None",
     secure: process.env.NODE_ENV === "production",
   });
   res.json({ ok: true });
