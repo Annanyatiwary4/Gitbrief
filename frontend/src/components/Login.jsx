@@ -11,6 +11,8 @@ const Login = () => {
 
   const handleGithubLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/github`;
+
+    
   };
 
   const handleDirectAccess = async (e) => {

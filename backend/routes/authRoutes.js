@@ -82,7 +82,7 @@ router.get("/github/callback", async (req, res) => {
      // set GitHub token in HttpOnly cookie
     res.cookie("gh_token", accessToken, {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "None",
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -91,7 +91,7 @@ router.get("/github/callback", async (req, res) => {
      // (optional) set a lightweight "uid" cookie to identify user record quickly
     res.cookie("uid", String(user._id), {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "None",
       secure: process.env.NODE_ENV === "production",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
