@@ -104,7 +104,7 @@ const riskData = [
         <CardContent className="grid grid-cols-3 gap-6 text-center">
           <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-black border-white rounded-2xl shadow">
             <p className="text-white text-2xl">Files Changed</p>
-            <p className="text-2xl font-bold text-white ">{stats.filesChanged}</p>
+            <p className="text-2xl font-bold text-white ">{stats?.filesChanged??0}</p>
           </motion.div>
           <motion.div whileHover={{ scale: 1.05 }} className="p-4 bg-black rounded-2xl shadow">
             <p className="text-white text-2xl">Lines Added</p>

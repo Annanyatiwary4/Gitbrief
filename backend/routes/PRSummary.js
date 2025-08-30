@@ -66,7 +66,9 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
     }
 
     // 6️⃣ AI prompt
-    const prompt = `
+    const prompt = `Respond only in JSON. Do not include markdown or explanations. 
+      The JSON should include: stats, dependencies, categories, files, riskScore, actions.
+          Here is the PR data:  
           "stats": {
               "filesChanged": ${stats.filesChanged},
               "linesAdded": ${stats.linesAdded},
@@ -107,15 +109,23 @@ router.get("/repos/:owner/:repo/pull-requests/:prNumber/summary", requireGithub,
     const model = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash" });
     const aiResponse = await model.generateContent(prompt);
 
-    let summaryJson;
-    try {
-      let rawText = aiResponse.response.text();
-      rawText = rawText.replace(/```json\n?/g, "").replace(/```/g, "").trim();
-      summaryJson = JSON.parse(rawText);
-    } catch (e) {
-      console.error("Failed to parse AI response:", aiResponse.response.text());
-      return res.status(500).json({ error: "AI did not return valid JSON" });
-    }
+        let summaryJson;
+      try {
+        let rawText = await aiResponse.response.text(); // use await if async
+        rawText = rawText.replace(/```json\n?/g, "").replace(/```/g, "").trim();
+        summaryJson = JSON.parse(rawText);
+      } catch (e) {
+        console.error("Failed to parse AI response:", e.message);
+        summaryJson = {
+          summary: `PR #${prNumber} has ${stats.commits} commits and ${stats.filesChanged} files changed.`,
+          dependencies: [],
+          categories: [],
+          files: stats.fileChanges,
+          riskScore
+        };
+      }
+
+
 
     // ✅ Normalize dependencies: ensure array of objects
    const normalizedDeps = (summaryJson.dependencies || []).map(dep => {
