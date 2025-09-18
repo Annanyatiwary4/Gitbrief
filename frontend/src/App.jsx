@@ -12,6 +12,7 @@ import PRSummaryPage from "./components/Summary";
 import { LoaderOne } from "./components/ui/loader";
 import { useLocation  } from "react-router-dom";
 import Contact from "./components/pages/Contact";
+import NotFoundPage from "./components/pages/Notfound";
 
 // Wrapper component to handle loading between routes
 function PageWrapper({ children }) {
@@ -58,6 +59,7 @@ function App() {
           <Route path="/repos/:owner/:repo/pull-requests/:prNumber" element ={<PRSummaryPage />} />
           <Route path="/contact" element ={<Contact />} />
           {/* Add other routes as needed */}
+          <Route path="*" element={<NotFoundPage />} />
 
         </Routes>
 
