@@ -54,14 +54,8 @@ export default function SlidingFooter() {
                     Github
                   </a>
                 </li>
-                <li>
-                  <a 
-                    href="mailto:annanyatiwary4@gmail.com"
-                    className="hover:text-white transition"
-                  >
-                    Email
-                  </a>
-                </li>
+                <Link to ="/contact" className ="space-y-4"><li>Contact</li></Link>
+                
                 <li>
                   <a 
                     href="https://www.linkedin.com/in/annanyatiwary4" 

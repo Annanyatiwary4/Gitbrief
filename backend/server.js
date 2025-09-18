@@ -7,6 +7,7 @@ import userRoutes from "./routes/userRoutes.js";
 import cookieParser from "cookie-parser";
 import repoRoutes from "./routes/repoRoutes.js";
 import prSummaryRoutes from "./routes/PRSummary.js";
+import contactRoutes from "./routes/ContactRoutes.js";
 
 
 
@@ -30,6 +31,7 @@ app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", repoRoutes);
 app.use("/api", prSummaryRoutes);
+app.use("/api", contactRoutes);
 
 app.get("/", (req, res) => res.send("API running..."));
 

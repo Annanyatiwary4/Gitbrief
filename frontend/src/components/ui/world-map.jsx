@@ -2,6 +2,8 @@
 import { useRef } from "react";
 import { motion } from "motion/react";
 import DottedMap from "dotted-map";
+import { useMemo } from "react";
+
 
 export default function WorldMap({
   dots = [
@@ -10,18 +12,21 @@ export default function WorldMap({
       end: { lat: 16.5062, lng: 80.6480 },   // Same point (pulse only)
     },
   ],
-  lineColor = "#0ea5e9",
+  lineColor = "#dd4848ffff",
 }) {
   const svgRef = useRef(null);
 
   // ✅ This is INSIDE the function now
+  const svgMap = useMemo(() => {
   const map = new DottedMap({ height: 100, grid: "diagonal" });
-  const svgMap = map.getSVG({
+  return map.getSVG({
     radius: 0.22,
-    color: "#FFFFFF40", // dotted grid color
+    color: "#FFFFFF40",
     shape: "circle",
-    backgroundColor: "black", // always dark
+    backgroundColor: "black",
   });
+}, []);
+
 
   // Convert lat/lng → x/y
   const projectPoint = (lat, lng) => {
