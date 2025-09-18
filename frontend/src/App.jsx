@@ -11,6 +11,7 @@ import { PRTable } from "./components/PRtable";
 import PRSummaryPage from "./components/Summary";
 import { LoaderOne } from "./components/ui/loader";
 import { useLocation  } from "react-router-dom";
+import Contact from "./components/pages/Contact";
 
 // Wrapper component to handle loading between routes
 function PageWrapper({ children }) {
@@ -55,6 +56,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard /> } />
           <Route path="/prs/:owner/:repo" element={<PRTable />} />
           <Route path="/repos/:owner/:repo/pull-requests/:prNumber" element ={<PRSummaryPage />} />
+          <Route path="/contact" element ={<Contact />} />
           {/* Add other routes as needed */}
 
         </Routes>

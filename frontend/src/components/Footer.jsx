@@ -42,13 +42,39 @@ export default function SlidingFooter() {
 
           {/* Socials */}
           <div>
-            <h3 className="font-semibold mb-3">Socials</h3>
-            <ul className="space-y-2 text-neutral-300 text-sm">
-              <li>Github</li>
-              <li>Twitter</li>
-              <li>LinkedIn</li>
-            </ul>
-          </div>
+              <h3 className="font-semibold mb-3">Socials</h3>
+              <ul className="space-y-2 text-neutral-300 text-sm">
+                <li>
+                  <a 
+                    href="https://github.com/Annanyatiwary4" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition"
+                  >
+                    Github
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="mailto:annanyatiwary4@gmail.com"
+                    className="hover:text-white transition"
+                  >
+                    Email
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href="https://www.linkedin.com/in/annanyatiwary4" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+              </ul>
+            </div>
+
 
           {/* Legal */}
           <div>
@@ -63,8 +89,8 @@ export default function SlidingFooter() {
           <div>
             <h3 className="font-semibold mb-3">Register</h3>
             <ul className="space-y-2 text-neutral-300 text-sm">
-              <li>Sign Up</li>
-              <li>Login</li>
+              <Link to="/signup" className="space-y-4"><li>Sign Up</li></Link>
+              <Link to="/login" className="space-y-4"><li>Login</li></Link>
              
             </ul>
           </div>
