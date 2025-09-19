@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import WorldMap from "../ui/world-map";
 import { Card } from "../ui/card";
+import BackButton from "@/utils/Backbutton";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -43,6 +44,7 @@ const Contact = () => {
 
   return (
     <div className="relative min-h-screen w-full bg-black text-white overflow-hidden">
+      
       {/* Full-screen World Map */}
       <div className="absolute inset-0 z-0">
         <WorldMap />
@@ -50,9 +52,10 @@ const Contact = () => {
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/70 z-10"></div>
-
+            
       {/* Content */}
       <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-6">
+       
         {/* Heading */}
         <div className="text-center mb-10">
           <h2 className="text-4xl font-bold">Wanna Chat? Drop Us a Line!</h2>
